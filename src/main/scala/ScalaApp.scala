@@ -1,10 +1,68 @@
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.{SparkConf, SparkContext}
+import scala.io.Source
 
 
 object ScalaApp extends App{
+  //http://stat-computing.org/dataexpo/2009/1987.csv.bz2
+ /* try {
+    val src = scala.io.Source.fromURL("http://stat-computing.org/dataexpo/2009/1987.csv.bz2")
+    val out = new java.io.FileWriter("home/sergio/TFM_Ficheros/1987.csv.bz2")
+    out.write(src.mkString)
+    out.close
+  } catch {
+    case e: java.io.IOException => "error occured"
+  }*/
+  /**
+    * downloads a url (file) to a desired file name
+    */
+  def downloadFile(url: URL, filename: String) {
+    commonOp(url2InputStream(url), filename)
+  }
 
-  //Suppress Spark output
+  /**
+    * common method for writing data from an inputstream to an outputstream
+    */
+  def commonOp(is: InputStream, filename: String) {
+    val out: OutputStream = file2OutputStream(filename)
+    try {
+      deleteFileIfExists(filename)
+      copy(is, out)
+    } catch {
+      case e: Exception => println(e.printStackTrace())
+    }
+
+    out.close()
+    is.close()
+
+  }
+
+  /**
+    * copies an inputstream to an  outputstream
+    */
+  def copy(in: InputStream, out: OutputStream) {
+    val buffer: Array[Byte] = new Array[Byte](1024)
+    var sum: Int = 0
+    Iterator.continually(in.read(buffer)).takeWhile(_ != -1).foreach({ n => out.write(buffer, 0, n); (sum += buffer.length); println(sum + " written to output "); })
+  }
+
+  /**
+    * handling of bzip archive files
+    */
+  def unzipFile(fn: String, outputFileName: String) {
+    val in = new BZip2CompressorInputStream(new FileInputStream(fn))
+    commonOp(in, outputFileName)
+
+  }
+/
+
+
+
+
+
+
+
+ /* //Suppress Spark output
   Logger.getLogger("org").setLevel(Level.ERROR)
   Logger.getLogger("akka").setLevel(Level.ERROR)
 
@@ -61,9 +119,10 @@ object ScalaApp extends App{
 
 
 
-
+*/
 
 sys.exit(0)
 
 
 }
+

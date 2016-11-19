@@ -38,6 +38,12 @@
             <artifactId>spark-csv_2.11</artifactId>
             <version>1.4.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.parquet</groupId>
+            <artifactId>parquet-avro</artifactId>
+            <version>1.9.0</version>
+        </dependency>
     </dependencies>
 
     <build>
